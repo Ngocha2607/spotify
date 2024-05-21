@@ -7,7 +7,10 @@ import { SongsController } from './songs/songs.controller';
 import { DevConfigService } from './common/providers/DevConfigService';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-imports: [
+import { Song } from './songs/entity/song.entity';
+
+@Module({
+  imports: [
   TypeOrmModule.forRoot({
   type: 'postgres',
   host: 'localhost',
@@ -15,14 +18,10 @@ imports: [
   username: 'postgres',
   password: '123456',
   database: 'spotify',
-  entities: [],
+  entities: [Song],
   synchronize: true,
   }),
-  ]
-  
-
-@Module({
-  imports: [SongsModule],
+  SongsModule],
   controllers: [AppController],
   providers: [AppService, 
     {
@@ -32,6 +31,10 @@ imports: [
   ],
 })
 export class AppModule implements NestModule {
+  constructor(private dataSource: DataSource) {
+    console.log(dataSource.driver.database);
+    
+  }
 configure(consumer: MiddlewareConsumer) {
   consumer.apply(LoggerMiddleware).forRoutes(SongsController);
 }
