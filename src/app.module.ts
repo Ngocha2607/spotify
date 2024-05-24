@@ -8,6 +8,10 @@ import { DevConfigService } from './common/providers/DevConfigService';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { Song } from './songs/entity/song.entity';
+import { User } from './users/entity/user.entity';
+import { Artist } from './artists/entity/artist.entity';
+import { PlayListModule } from './playlists/playlists.module';
+import { Playlist } from './playlists/entity/playlists.entity';
 
 @Module({
   imports: [
@@ -16,12 +20,13 @@ import { Song } from './songs/entity/song.entity';
       host: 'localhost',
       port: 5432,
       username: 'postgres',
-      password: 'Ha!23456',
+      password: '123456',
       database: 'spotify',
-      entities: [Song],
+      entities: [Song, User, Artist, Playlist],
       synchronize: true,
     }),
     SongsModule,
+    PlayListModule,
   ],
   controllers: [AppController],
   providers: [
