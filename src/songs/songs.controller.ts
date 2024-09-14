@@ -12,7 +12,9 @@ import {
   Post,
   Put,
   Query,
+  Request,
   Scope,
+  UseGuards,
 } from '@nestjs/common';
 import { SongsService } from './songs.service';
 import { CreateSongDto } from './dto/create-song.dto';
@@ -20,6 +22,7 @@ import { Song } from './entity/song.entity';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { UpdateSongDTO } from './dto/update-song.dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
+import { JwtArtistGuard } from 'src/jwt-guard/jwt-artist.guard';
 
 @Controller({
   path: 'songs',
@@ -28,20 +31,22 @@ import { Pagination } from 'nestjs-typeorm-paginate';
 export class SongsController {
   constructor(private songsService: SongsService) {}
   @Post()
-  create(@Body() createSongDTO: CreateSongDto): Promise<Song> {
+  @UseGuards(JwtArtistGuard)
+  create(@Body() createSongDTO: CreateSongDto, @Request() req): Promise<Song> {
+    console.log(req.user);
     return this.songsService.create(createSongDTO);
   }
 
   @Get()
   findAll(
-    @Query( 'page', new DefaultValuePipe(1), ParseArrayPipe) 
-      page: number = 1,
-    @Query( 'pageSize', new DefaultValuePipe(10), ParseIntPipe) 
+    @Query('page', new DefaultValuePipe(1), ParseArrayPipe)
+    page: number = 1,
+    @Query('pageSize', new DefaultValuePipe(10), ParseIntPipe)
     pageSize: number = 10,
-): Promise<Pagination<Song>> {
+  ): Promise<Pagination<Song>> {
     try {
       const limit = pageSize > 100 ? 100 : pageSize;
-      return this.songsService.pagination({page, limit})
+      return this.songsService.pagination({ page, limit });
     } catch (error) {
       throw new HttpException(
         'Server Error',

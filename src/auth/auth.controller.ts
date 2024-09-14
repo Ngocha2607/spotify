@@ -7,26 +7,23 @@ import { LoginDto } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
-    constructor(
-        private userService: UsersService,
-        private authService: AuthService
-    ) {}
-    @Post('signup')
-    signup(
-        @Body()
-        userDto: UserCreateDto
-    ): Promise<User> {
+  constructor(
+    private userService: UsersService,
+    private authService: AuthService,
+  ) {}
+  @Post('signup')
+  signup(
+    @Body()
+    userDto: UserCreateDto,
+  ): Promise<User> {
+    return this.userService.create(userDto);
+  }
 
-        return this.userService.create(userDto)
-    }
-
-    @Post('login')
-    login(
-        @Body()
-        loginDto: LoginDto
-    ) : Promise<User> {
-
-        return this.authService.login(loginDto)
-    }
-
+  @Post('login')
+  login(
+    @Body()
+    loginDto: LoginDto,
+  ): Promise<{ accessToken: string }> {
+    return this.authService.login(loginDto);
+  }
 }

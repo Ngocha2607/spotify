@@ -14,6 +14,7 @@ import { PlayListModule } from './playlists/playlists.module';
 import { Playlist } from './playlists/entity/playlists.entity';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { ArtistsModule } from './artists/artists.module';
 
 @Module({
   imports: [
@@ -22,7 +23,8 @@ import { AuthModule } from './auth/auth.module';
       host: 'localhost',
       port: 5432,
       username: 'postgres',
-      password: '123456',
+      // password: '123456',
+      password: 'Ha!23456',
       database: 'spotify',
       entities: [Song, User, Artist, Playlist],
       synchronize: true,
@@ -31,6 +33,7 @@ import { AuthModule } from './auth/auth.module';
     PlayListModule,
     UsersModule,
     AuthModule,
+    ArtistsModule,
   ],
   controllers: [AppController],
   providers: [
