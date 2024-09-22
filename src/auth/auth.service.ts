@@ -18,7 +18,9 @@ export class AuthService {
     private artistService: ArtistsService,
   ) {}
 
-  async login(loginDto: LoginDto): Promise<{ accessToken: string }> {
+  async login(loginDto: LoginDto): Promise<{ accessToken: string } | {
+    validate2FA: string; message: string
+  }> {
     const user = await this.userService.findOne(loginDto);
     const passwordMatched = await bcrypt.compare(
       loginDto.password,
@@ -33,6 +35,12 @@ export class AuthService {
       const artist = await this.artistService.findArtist(user.id);
       if (artist) {
         payload.artistId = artist.id;
+      }
+      if(user.enable2FA && user.twoFASecret) {
+        return {
+          validate2FA: 'http://localhost:3000/auth/validate-2fa',
+          message: "Please send the one-time password/token from your Authenticator app",
+        }
       }
       return { accessToken: this.jwtService.sign(payload) };
     } else {
@@ -54,5 +62,34 @@ export class AuthService {
   }
   async disable2FA(userId: number): Promise<UpdateResult> {
     return this.userService.disable2FA(userId);
+  }
+  async validate2FAToken(
+    userId: number,
+    token: string,
+  ): Promise<{ verified: boolean }> {
+    try {
+      const user = await this.userService.findById(userId);
+      const verified = speakeasy.totp.verify({
+        secret: user.twoFASecret,
+        encoding: 'base32',
+        token: token,
+      });
+
+      if (verified) {
+        return {
+          verified: true,
+        };
+      } else {
+        return {
+          verified: false,
+        };
+      }
+    } catch (error) {
+      throw new UnauthorizedException('Error verifying token');
+    }
+  }
+
+  async validateUserByApiKey(apiKey: string): Promise<User> {
+    return this.userService.findByApiKey(apiKey);
   }
 }

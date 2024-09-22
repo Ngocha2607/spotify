@@ -4,6 +4,7 @@ import { User } from './entity/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserCreateDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
+import {v4 as uuid4} from 'uuid';
 
 @Injectable({
   scope: Scope.TRANSIENT,
@@ -21,6 +22,7 @@ export class UsersService {
     user.firstName = userDto.firstName;
     user.lastName = userDto.lastName;
     user.email = userDto.email;
+    user.apiKey = uuid4();
     const userSaved = await this.userRepository.save(user);
     delete userSaved.password;
     return userSaved;
@@ -58,5 +60,9 @@ export class UsersService {
         twoFASecret: null,
       },
     );
+  }
+
+  async findByApiKey(apiKey: string): Promise<User> {
+    return this.userRepository.findOneBy({ apiKey: apiKey });
   }
 }

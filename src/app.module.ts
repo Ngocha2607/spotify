@@ -15,20 +15,10 @@ import { Playlist } from './playlists/entity/playlists.entity';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ArtistsModule } from './artists/artists.module';
-
+import { dataSourceOptions } from 'db/data-source';
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      // password: '123456',
-      password: 'Ha!23456',
-      database: 'spotify',
-      entities: [Song, User, Artist, Playlist],
-      synchronize: true,
-    }),
+    TypeOrmModule.forRoot(dataSourceOptions),
     SongsModule,
     PlayListModule,
     UsersModule,
