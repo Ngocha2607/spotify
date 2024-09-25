@@ -70,4 +70,9 @@ export class AuthController {
       msg: 'authenticated with api key'
     }
   }
+
+  @Get('test')
+  testEnv() {
+    return this.authService.getEnvVariables()
+  }
 }

@@ -15,15 +15,26 @@ import { Playlist } from './playlists/entity/playlists.entity';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ArtistsModule } from './artists/artists.module';
-import { dataSourceOptions } from 'db/data-source';
+import { dataSourceOptions, typeOrmAsyncConfig } from 'db/data-source';
+import { SeedModule } from './seed/seed.module';
+import { ConfigModule } from '@nestjs/config';
+import configuration from './config/configuration';
+import {validate} from ".env.validation"
 @Module({
   imports: [
-    TypeOrmModule.forRoot(dataSourceOptions),
+    ConfigModule.forRoot({
+      validate: validate,
+      envFilePath: ['.development.env', '.env', '.production.env'],
+      isGlobal: true,
+      load: [configuration]
+    }),
+    TypeOrmModule.forRootAsync(typeOrmAsyncConfig),
     SongsModule,
     PlayListModule,
     UsersModule,
     AuthModule,
     ArtistsModule,
+    SeedModule,
   ],
   controllers: [AppController],
   providers: [
